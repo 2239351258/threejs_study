@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 // 导入轨迹控制器
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-// 导入动画库
-import gsap from 'gsap'
+
 
 // 创建场景
 const scene = new THREE.Scene();
@@ -60,34 +59,14 @@ scene.add(axesHelper);
 // 设置时钟
 const clock = new THREE.Clock();
 
-// 设置动画
-let animatel = gsap.to(cube.position, {
-  x: 5,
-  duration: 5,
-  ease: "power1.inOut",
-  repeat: 2,  //重复次数（-1为一直重复）
-  yoyo: true,  //往返运动
-  delay: 2,    //延迟2s后运动
-  onComplete: () => { console.log('动画结束') },
-  onStart: () => { console.log('动画开始') }
-})
-gsap.to(cube.rotation, {
-  x: 2 * Math.PI,
-  duration: 5,
-  repeat: -1,
-  ease: "power1.inOut"
-})
-
-window.addEventListener('dblclick', () => {
-  if (animatel.isActive()) {
-    animatel.pause()
-  }
-  else {
-    animatel.resume()
-  }
-})
-
 function render() {
+  // 获取时钟运行的总时长
+  let time = clock.getElapsedTime()
+  // 获取两帧间隔时间
+  // let deltaTime = clock.getDelta()
+  // console.log(deltaTime)
+  let t = time % 5
+  cube.position.x = t * 1
   renderer.render(scene, camera);
   // 渲染下一帧的时候就会调用render函数
   requestAnimationFrame(render);
