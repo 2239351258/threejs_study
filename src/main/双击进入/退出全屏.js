@@ -3,9 +3,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 // 导入动画库
 import gsap from 'gsap'
-// 导入dat.gui
-import * as dat from 'dat.gui'
-
 
 // 创建场景
 const scene = new THREE.Scene();
@@ -29,36 +26,6 @@ const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 // 将几何体添加到场景中
 scene.add(cube);
 
-const gui = new dat.GUI();
-// 修改物体位置
-gui.add(cube.position, 'x').min(0).max(5).step(0.01).name('移动X轴').onChange((val) => {
-  console.log(`值被修改为：${val}`)
-}).onFinishChange((val) => {
-  console.log(`完成修改后的值：${val}`)
-})
-// 修改物体颜色
-const params = {
-  color: '#ffff00',
-  fn: () => {
-    if (animatel.isActive()) {
-      animatel.pause()
-    }
-    else {
-      animatel.resume()
-    }
-  }
-}
-gui.addColor(params, "color").onChange((val) => {
-  console.log(`颜色修改为：${val}`)
-  cube.material.color.set(val)
-})
-// 物体显示
-gui.add(cube, 'visible').name('是否显示')
-// 设置按钮点击触发事件
-gui.add(params, 'fn').name('动画暂停/恢复')
-// 设置文件夹
-let folder = gui.addFolder('设置物体')
-folder.add(cube.material, 'wireframe')
 
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer();
@@ -88,8 +55,9 @@ let animatel = gsap.to(cube.position, {
   x: 5,
   duration: 5,
   ease: "power1.inOut",
-  repeat: 1,  //重复次数（-1为一直重复）
+  repeat: 2,  //重复次数（-1为一直重复）
   yoyo: true,  //往返运动
+  delay: 2,    //延迟2s后运动
   onComplete: () => { console.log('动画结束') },
   onStart: () => { console.log('动画开始') }
 })
