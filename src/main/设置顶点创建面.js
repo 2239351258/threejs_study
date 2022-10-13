@@ -19,63 +19,39 @@ camera.position.set(0, 0, 10);
 // 添加相机
 scene.add(camera);
 
-// 导入纹理
-const textureLoader = new THREE.TextureLoader()
-const Texture = textureLoader.load('./textures/avatar/index.jpg')
-const csdnTexture = textureLoader.load('./textures/avatar/csdn.png')
-// 设置纹理属性
-// 偏移
-// Texture.offset.x = 0.5
-// Texture.offset.y = 0.5
-// Texture.offset.z = 0.5
-// Texture.offset.set(0.5, 0.5, 0.5)
-// 设置旋转原点(中心)
-// Texture.center.set(0.5, 0.5)
-// 顺旋转（默认以左下角为原点）
-// Texture.rotation = Math.PI / 2
-// 纹理重复
-// Texture.repeat.set(2, 2)
-// 纹理重复模式
-// Texture.wrapS = THREE.MirroredRepeatWrapping;   //镜像
-// Texture.wrapT = THREE.RepeatWrapping;
-
-// 纹理显示设置
-// minFilter->一个纹素覆盖大于一个像素时（图大于物体），贴图的采样方式
-// magFilter->一个纹素覆盖小于一个像素时（物体大于图），贴图的采样方式
-// csdnTexture.minFilter = THREE.NearestFilter
-// csdnTexture.magFilter = THREE.NearestFilter
-// csdnTexture.minFilter = THREE.LinearFilter
-// csdnTexture.magFilter = THREE.LinearFilter
-
-
 // 创建几何体
-const cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
-// 创建材质
-const basicMaterial = new THREE.MeshBasicMaterial({
-  // 添加纹理
-  map: Texture,
-  // 两面都渲染，默认渲染前面
-  side: THREE.DoubleSide,
-})
-// 连接几何体和材质
-const cube = new THREE.Mesh(cubeGeometry, basicMaterial)
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), basicMaterial)
-plane.position.set(4, 0, 0)
-scene.add(plane)
+const cubeGeometry = new THREE.BoxGeometry();
 
-// 添加物体
-scene.add(cube)
-cube.rotation.x = Math.PI / 4
-cube.rotation.z = Math.PI / 4
-const animatel = gsap.to(cube.rotation, {
-  // x: 2 * Math.PI,
-  y: 2 * Math.PI,
-  // z: 2 * Math.PI,
-  duration: 5,
-  repeat: -1,
-  ease: "power1.inOut"
+const geometry = new THREE.BufferGeometry();
+const vertices = new Float32Array([-1.0, -1.0, 1.0,
+  1.0, -1.0, 1.0,
+  1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0,
+-1.0, 1.0, 1.0,
+-1.0, -1.0, 1.0
+])
+geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
+const material = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+// 根据几何体和材质创建物体
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+const mesh = new THREE.Mesh(geometry, material)
+
+// 将几何体添加到场景中
+scene.add(cube);
+scene.add(mesh);
+
+const gui = new dat.GUI();
+// 修改物体位置
+gui.add(cube.position, 'x').min(0).max(5).step(0.01).name('移动X轴').onChange((val) => {
+  console.log(`值被修改为：${val}`)
+}).onFinishChange((val) => {
+  console.log(`完成修改后的值：${val}`)
 })
+// 修改物体颜色
 const params = {
+  color: '#ffff00',
   fn: () => {
     if (animatel.isActive()) {
       animatel.pause()
@@ -85,13 +61,17 @@ const params = {
     }
   }
 }
-const gui = new dat.GUI();
+gui.addColor(params, "color").onChange((val) => {
+  console.log(`颜色修改为：${val}`)
+  cube.material.color.set(val)
+})
+// 物体显示
+gui.add(cube, 'visible').name('是否显示')
+// 设置按钮点击触发事件
+gui.add(params, 'fn').name('动画暂停/恢复')
 // 设置文件夹
 let folder = gui.addFolder('设置物体')
-folder.add(params, 'fn').name('动画暂停/恢复')
-folder.add(cube.rotation, 'x').min(0).max(2 * Math.PI).step(0.01)
-folder.add(cube.rotation, 'y').min(0).max(2 * Math.PI).step(0.01)
-folder.add(cube.rotation, 'z').min(0).max(2 * Math.PI).step(0.01)
+folder.add(cube.material, 'wireframe')
 
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer();
@@ -115,6 +95,23 @@ scene.add(axesHelper);
 
 // 设置时钟
 const clock = new THREE.Clock();
+
+// 设置动画
+let animatel = gsap.to(cube.position, {
+  x: 5,
+  duration: 5,
+  ease: "power1.inOut",
+  repeat: 1,  //重复次数（-1为一直重复）
+  yoyo: true,  //往返运动
+  onComplete: () => { console.log('动画结束') },
+  onStart: () => { console.log('动画开始') }
+})
+gsap.to(cube.rotation, {
+  x: 2 * Math.PI,
+  duration: 5,
+  repeat: -1,
+  ease: "power1.inOut"
+})
 
 // 双击实现全屏/推出全屏
 window.addEventListener('dblclick', () => {
