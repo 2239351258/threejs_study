@@ -56,6 +56,10 @@ const basicMaterial = new THREE.MeshBasicMaterial({
   map: Texture,
   // 两面都渲染，默认渲染前面
   side: THREE.DoubleSide,
+  // 灰度纹理用于控制整个表面的不透明度。（黑色：完全透明；白色：完全不透明）
+  // alphaMap:doorAplhaTexture,
+  //材质是否透明
+  transparent: true
 })
 // 连接几何体和材质
 const cube = new THREE.Mesh(cubeGeometry, basicMaterial)
