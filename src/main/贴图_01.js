@@ -19,28 +19,11 @@ camera.position.set(0, 0, 10);
 // 添加相机
 scene.add(camera);
 
-// 灯光
-const light = new THREE.AmbientLight(0xffffff, 0.5);  // 环境光
-scene.add(light)
-// 平行光(太阳光)
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
-// 设置光源
-directionalLight.position.set(0, 10, 0)
-scene.add(directionalLight)
-
 // 导入纹理
 const textureLoader = new THREE.TextureLoader()
 const doorTexture = textureLoader.load('./textures/door/color.jpg')
 const doorAplhaTexture = textureLoader.load('./textures/door/alpha.jpg')
 const doorAoTexture = textureLoader.load('./textures/door/ambientOcclusion.jpg')
-// 置换贴图
-const doorHeightTexture = textureLoader.load('./textures/door/height.jpg')
-// 粗糙度贴图
-const roughnessTexture = textureLoader.load('./textures/door/roughness.jpg')
-// 金属贴图
-const metalnessTexture = textureLoader.load('./textures/door/metalness.jpg')
-// 法线贴图
-const normalTexture = textureLoader.load('./textures/door/normal.jpg')
 // 设置纹理属性
 // 偏移
 // Texture.offset.x = 0.5
@@ -67,9 +50,9 @@ const normalTexture = textureLoader.load('./textures/door/normal.jpg')
 
 
 // 创建几何体
-const cubeGeometry = new THREE.BoxGeometry(3, 3, 3, 100, 100, 100);
+const cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
 // 创建材质
-const Material = new THREE.MeshStandardMaterial({
+const basicMaterial = new THREE.MeshBasicMaterial({
   // 添加纹理
   map: doorTexture,
   // 灰度纹理用于控制整个表面的不透明度。（黑色：完全透明；白色：完全不透明）
@@ -77,29 +60,18 @@ const Material = new THREE.MeshStandardMaterial({
   // 环境贴图
   aoMap: doorAoTexture,
   // 环境贴图暗度
-  aoMapIntensity: 1,
-  // 置换贴图
-  displacementMap: doorHeightTexture,
-  displacementScale: 0.1,
-  // 粗糙度贴图
-  roughnessMap: roughnessTexture,
-  roughness: 1,
-  // 金属度贴图
-  metalnessMap: metalnessTexture,
-  metalness: 1,
-  // 法线贴图
-  normalMap: normalTexture,
+  aoMapIntensity: 0.5,
   // 两面都渲染，默认渲染前面
   side: THREE.DoubleSide,
   //材质是否透明
-  // transparent: true
+  transparent: true
 })
 // 连接几何体和材质
-const cube = new THREE.Mesh(cubeGeometry, Material)
+const cube = new THREE.Mesh(cubeGeometry, basicMaterial)
 
-const planeGeometry = new THREE.PlaneGeometry(1, 1, 100, 100)
-const plane = new THREE.Mesh(planeGeometry, Material)
-plane.position.set(0, 0, 4)
+const planeGeometry = new THREE.PlaneGeometry(1, 1)
+const plane = new THREE.Mesh(planeGeometry, basicMaterial)
+plane.position.set(4, 0, 0)
 scene.add(plane)
 planeGeometry.setAttribute('uv2', new THREE.BufferAttribute(planeGeometry.attributes.uv.array, 2))
 cubeGeometry.setAttribute('uv2', new THREE.BufferAttribute(cubeGeometry.attributes.uv.array, 2))
@@ -109,7 +81,9 @@ cube.rotation.x = Math.PI / 4
 cube.rotation.y = Math.PI / 4
 cube.rotation.z = Math.PI / 4
 const animatel = gsap.to(cube.rotation, {
+  // x: 2 * Math.PI,
   y: 2 * Math.PI,
+  // z: 2 * Math.PI,
   duration: 5,
   repeat: -1,
   ease: "power1.inOut"
