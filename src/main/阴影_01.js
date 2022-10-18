@@ -42,6 +42,11 @@ const sphere = new THREE.Mesh(sphereGeometry, material);
 sphere.castShadow = true
 scene.add(sphere);
 
+// // 给场景添加背景
+// scene.background = evnMapTexture
+// // 给场景所有的物体添加默认的环境贴图
+// scene.environment = evnMapTexture
+
 // 创建平面
 const planeGeometry = new THREE.PlaneGeometry(10, 10);
 const plane = new THREE.Mesh(planeGeometry, material);
@@ -58,42 +63,9 @@ scene.add(light)
 // 平行光(太阳光)
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
 // 设置光源
-directionalLight.position.set(5, 5, 5)
-// 设置光照投射阴影
+directionalLight.position.set(10, 10, 10)
 directionalLight.castShadow = true
-// 设置阴影贴图模糊度
-directionalLight.shadow.radius = 20
-// 设置阴影贴图的分辨率
-directionalLight.shadow.mapSize.set(2048, 2048)
-
-// 设置平行光投射相机的属性
-directionalLight.shadow.camera.near = 0.5
-directionalLight.shadow.camera.far = 500
-directionalLight.shadow.camera.top = 5
-directionalLight.shadow.camera.bottom = -5
-directionalLight.shadow.camera.left = 5
-directionalLight.shadow.camera.right = -5
-
 scene.add(directionalLight)
-const gui = new dat.GUI();
-gui.add(directionalLight.shadow.camera, 'near').min(0).max(100).step(0.1).onChange(() => {
-  directionalLight.shadow.camera.updateProjectionMatrix()
-})
-gui.add(directionalLight.shadow.camera, 'far').min(0).max(100).step(0.1).onChange(() => {
-  directionalLight.shadow.camera.updateProjectionMatrix()
-})
-gui.add(directionalLight.shadow.camera, 'top').min(0).max(100).step(0.1).onChange(() => {
-  directionalLight.shadow.camera.updateProjectionMatrix()
-})
-gui.add(directionalLight.shadow.camera, 'bottom').min(0).max(100).step(0.1).onChange(() => {
-  directionalLight.shadow.camera.updateProjectionMatrix()
-})
-gui.add(directionalLight.shadow.camera, 'left').min(0).max(100).step(0.1).onChange(() => {
-  directionalLight.shadow.camera.updateProjectionMatrix()
-})
-gui.add(directionalLight.shadow.camera, 'right').min(0).max(100).step(0.1).onChange(() => {
-  directionalLight.shadow.camera.updateProjectionMatrix()
-})
 
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer();
@@ -116,8 +88,7 @@ controls.enableDamping = true;
 // 添加坐标轴辅助器
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
-const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight)
-scene.add(directionalLightHelper)
+
 // 设置时钟
 const clock = new THREE.Clock();
 
